@@ -5,6 +5,7 @@ import pygame
 
 from settings_game_2 import Settings
 from game_stats_game_2 import GameStats
+from scoreboard_game_2 import Scoreboard
 from button import Button
 from ship_game_2 import Ship
 from bullet_game_2 import Bullet
@@ -22,8 +23,10 @@ class Game_2:
             (self.settings.screen_width, self.settings.screen_height))
         pygame.display.set_caption("Game_2")
 
-        # Create an instance ot store game statistics.
-        self.stats = GameStats(self) 
+        # Create an instance ot store game statistics,
+        # and create a scoreboard.
+        self.stats = GameStats(self)
+        self.sb = Scoreboard(self) 
 
         self.screen_rect = self.screen.get_rect()
 
@@ -110,6 +113,7 @@ class Game_2:
             # Destroy existing bullets and create new fleet.
             self.bullets.empty()
             self._create_fleet()
+            self.settings.increase_speed()
 
     def _check_aliens_left(self):
         """Check if any aliens have reached the left of the screen."""
@@ -169,6 +173,9 @@ class Game_2:
         """Start a new game when the player clicks Play."""
         button_clicked =  self.play_button.rect.collidepoint(mouse_pos)
         if button_clicked and not self.stats.game_active:
+            # Reset the game settings.
+            self.settings.initialize_dynamic_settings()
+
             # Reset the game statistics.
             self.stats.reset_stats()
             self.stats.game_active = True
@@ -217,6 +224,9 @@ class Game_2:
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
         self.aliens.draw(self.screen)
+
+        # Draw the score information.
+        self.sb.show_score()
 
         # Draw the play button if the game is inactive.
         if not self.stats.game_active:
