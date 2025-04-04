@@ -22,7 +22,7 @@ class AlienInvasion:
         self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height))
         pygame.display.set_caption("Alien Invasion")
 
-        # Create and instance to store game statistics,
+        # Create an instance to store game statistics,
         # and create a scoreboard.
         self.stats = GameStats(self)
         self.sb = Scoreboard(self)         
@@ -95,7 +95,7 @@ class AlienInvasion:
         # Update bullet positions. 
         self.bullets.update()
         
-        # Get rid of bullets that have disapeared.
+        # Get rid of bullets that have disappeared.
         for bullet in self.bullets.copy():
             if bullet.rect.bottom <= 0:
                  self.bullets.remove(bullet)
@@ -103,7 +103,6 @@ class AlienInvasion:
         # Check for bullet-alien collisions
         self._check_bullet_alien_collisions()
  
-
     def _check_bullet_alien_collisions(self):
         """Respond to bullet-alien collisions."""
         # Remove any bullets and aliens that have collided.        
@@ -113,22 +112,21 @@ class AlienInvasion:
         if collisions:
             for aliens in collisions.values():
                 self.stats.score += self.settings.alien_points * len(aliens)
-                self.sb.prep_score()
-                self.sb.prep_high_score()  # Update the high score image
-                
-
-        
+                self.sb.prep_images()
+               
         if not self.aliens:  
-            # Destroy existing bullets and create new fleet.
-            self.bullets.empty()
-            self._create_fleet() 
-            self.settings.increase_speed() 
-
-            # Increase level.
-            self.stats.level += 1
-            self.sb.prep_level()
-
+            self.start_new_level()
         self.sb.check_high_score()          
+
+    def start_new_level(self):
+        """Destroy existing bullets and create new fleet"""
+        self.bullets.empty()
+        self._create_fleet() 
+        self.settings.increase_speed() 
+
+        # Increase level.
+        self.stats.level += 1
+        self.sb.prep_level()
 
     def _update_aliens(self):
         """
@@ -171,9 +169,7 @@ class AlienInvasion:
         # Reset the game statistics.
         self.stats.reset_stats()
         self.stats.game_active = True
-        self.sb.prep_score()
-        self.sb.prep_level()
-        self.sb.prep_ships()
+        self.sb.prep_images()
 
         # Get rid of any remaining aliens and bullets.
         self.aliens.empty()
